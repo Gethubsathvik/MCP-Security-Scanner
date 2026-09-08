@@ -53,3 +53,14 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Images and media (mcpscan is a text/CLI tool; it does not process image inputs)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.ico
+*.tiff
+*.webp
+*.svg

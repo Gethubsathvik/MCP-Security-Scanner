@@ -7,6 +7,8 @@
 
 🪟 Works on **Windows**, 🍎 **macOS**, 🐧 **Linux**, and 🤖 **Android** (via Termux or Python distributions).
 
+> **Note:** `mcpscan` is a text-based CLI tool. It does **not** support image inputs or image processing. If you encounter an error like `Cannot read "image.png" (this model does not support image input)`, it means an image file was provided where a text/stdio command or HTTP endpoint was expected.
+
 ---
 
 ### 📁 Project structure
