@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from mcpscan.checks.base import Check
 from mcpscan.checks._helpers import compact
+from mcpscan.checks.base import Check
 from mcpscan.models import Finding, MCPManifest
 
 
