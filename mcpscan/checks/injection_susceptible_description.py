@@ -12,8 +12,13 @@ class InjectionSusceptibleDescriptionCheck(Check):
     title = "Injection-susceptible description"
 
     _patterns = (
-        re.compile(r"\b(ignore|disregard|forget|override)\b.{0,50}\b(instruction|previous|system|safety|rule)", re.I),
-        re.compile(r"\b(system prompt|developer message|secret instructions|do not reveal)\b", re.I),
+        re.compile(
+            r"\b(ignore|disregard|forget|override)\b.{0,50}\b(instruction|previous|system|safety|rule)",
+            re.I,
+        ),
+        re.compile(
+            r"\b(system prompt|developer message|secret instructions|do not reveal)\b", re.I
+        ),
         re.compile(r"<\/?(?:system|instruction|prompt|tool)[^>]*>", re.I),
         re.compile(r"\b(must|always)\b.{0,45}\b(send|upload|share|reveal|exfiltrate)\b", re.I),
     )
