@@ -91,9 +91,7 @@ class MCPClient:
             import httpx2
 
             async with httpx2.AsyncClient(headers=headers) as http_client:
-                async with streamable_http_client(
-                    self.target, http_client=http_client
-                ) as streams:
+                async with streamable_http_client(self.target, http_client=http_client) as streams:
                     yield streams
             return
 
