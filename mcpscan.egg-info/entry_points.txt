@@ -1,0 +1,2 @@
+[console_scripts]
+mcpscan = mcpscan.cli:app

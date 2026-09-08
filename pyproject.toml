@@ -2,7 +2,22 @@
 name = "mcpscan"
 version = "0.1.0"
 description = "Passive security scanner for Model Context Protocol servers"
+readme = "README.md"
+license = "MIT"
 requires-python = ">=3.12"
+authors = [
+    { name = "mcpscan contributors" },
+]
+keywords = ["mcp", "security", "scanner", "model-context-protocol", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = [
     "httpx2>=2.12.0",
     "mcp>=2.2.0",
@@ -14,3 +29,27 @@ dependencies = [
 
 [project.scripts]
 mcpscan = "mcpscan.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/example/mcpscan"
+Repository = "https://github.com/example/mcpscan"
+Issues = "https://github.com/example/mcpscan/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mcpscan*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
