@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import re
-from typing import Any
 
 from mcpscan.checks._helpers import compact, item_name
 from mcpscan.checks.base import Check
-from mcpscan.models import Finding, MCPManifest
+from mcpscan.models import Finding, MCPManifest, Severity
 
 
 class OverprivilegedToolCheck(Check):
@@ -13,11 +12,35 @@ class OverprivilegedToolCheck(Check):
     title = "Overprivileged tool"
 
     _broad_capabilities = (
-        (re.compile(r"\b(shell|command|exec(?:ute)?|subprocess|terminal)\b", re.I), "shell execution"),
-        (re.compile(r"\b(write|delete|remove|modify|rename|chmod).{0,30}\b(file|folder|directory|filesystem)\b", re.I), "filesystem mutation"),
-        (re.compile(r"\b(arbitrary|any|raw|unrestricted).{0,30}\b(network|http|url|request)\b", re.I), "unrestricted network access"),
+        (
+            re.compile(r"\b(shell|command|exec(?:ute)?|subprocess|terminal)\b", re.I),
+            "shell execution",
+        ),
+        (
+            re.compile(
+                r"\b(write|delete|remove|modify|rename|chmod).{0,30}\b(file|folder|directory|filesystem)\b",
+                re.I,
+            ),
+            "filesystem mutation",
+        ),
+        (
+            re.compile(
+                r"\b(arbitrary|any|raw|unrestricted).{0,30}\b(network|http|url|request)\b", re.I
+            ),
+            "unrestricted network access",
+        ),
     )
-    _scope_keys = {"path", "paths", "directory", "filename", "url", "host", "command", "allowlist", "resource"}
+    _scope_keys = {
+        "path",
+        "paths",
+        "directory",
+        "filename",
+        "url",
+        "host",
+        "command",
+        "allowlist",
+        "resource",
+    }
 
     def run(self, manifest: MCPManifest) -> list[Finding]:
         findings: list[Finding] = []
@@ -35,11 +58,18 @@ class OverprivilegedToolCheck(Check):
                     for name, definition in properties.items()
                     if name in self._scope_keys
                     and isinstance(definition, dict)
-                    and any(key in definition for key in ("enum", "pattern", "const", "minLength", "maxLength"))
+                    and any(
+                        key in definition
+                        for key in ("enum", "pattern", "const", "minLength", "maxLength")
+                    )
                 }
-                if scoped or re.search(r"\b(allowlist|approved|sandbox|project directory|restricted)\b", description, re.I):
+                if scoped or re.search(
+                    r"\b(allowlist|approved|sandbox|project directory|restricted)\b",
+                    description,
+                    re.I,
+                ):
                     continue
-                severity = "critical" if capability == "shell execution" else "high"
+                severity: Severity = "critical" if capability == "shell execution" else "high"
                 findings.append(
                     Finding(
                         check_id=self.check_id,
