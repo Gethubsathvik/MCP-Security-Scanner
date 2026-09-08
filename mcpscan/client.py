@@ -16,7 +16,7 @@ from mcpscan.models import MCPManifest, Transport
 
 def _dump(value: Any) -> dict[str, Any]:
     if hasattr(value, "model_dump"):
-        return value.model_dump(mode="json", by_alias=True, exclude_none=True)
+        return cast(dict[str, Any], value.model_dump(mode="json", by_alias=True, exclude_none=True))
     return cast(dict[str, Any], dict(value))
 
 

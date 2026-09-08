@@ -22,7 +22,12 @@ def vulnerable_manifest() -> MCPManifest:
 def test_vulnerable_demo_surfaces_planted_flaws() -> None:
     report = Scanner().scan_manifest(vulnerable_manifest())
     check_ids = {finding.check_id for finding in report.findings}
-    assert {"overprivileged-tool", "injection-susceptible-description", "weak-input-validation", "secret-exposure"} <= check_ids
+    assert {
+        "overprivileged-tool",
+        "injection-susceptible-description",
+        "weak-input-validation",
+        "secret-exposure",
+    } <= check_ids
     assert report.counts["critical"] == 1
     assert report.score > 0
 

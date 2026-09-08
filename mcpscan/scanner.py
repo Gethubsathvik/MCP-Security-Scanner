@@ -16,11 +16,17 @@ SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3, "critical": 4}
 class Scanner:
     checks: Iterable[Check] = DEFAULT_CHECKS
 
-    def scan_manifest(self, manifest: MCPManifest, severity_threshold: Severity = "info") -> ScanReport:
+    def scan_manifest(
+        self, manifest: MCPManifest, severity_threshold: Severity = "info"
+    ) -> ScanReport:
         findings = [finding for check in self.checks for finding in check.run(manifest)]
         threshold_rank = SEVERITY_RANK[severity_threshold]
-        findings = [finding for finding in findings if SEVERITY_RANK[finding.severity] >= threshold_rank]
-        findings.sort(key=lambda finding: (-SEVERITY_RANK[finding.severity], finding.target, finding.check_id))
+        findings = [
+            finding for finding in findings if SEVERITY_RANK[finding.severity] >= threshold_rank
+        ]
+        findings.sort(
+            key=lambda finding: (-SEVERITY_RANK[finding.severity], finding.target, finding.check_id)
+        )
         return ScanReport(
             target=manifest.target,
             transport=manifest.transport,

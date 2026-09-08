@@ -55,6 +55,4 @@ def render_terminal(report: ScanReport, console: Console | None = None) -> None:
 
 
 def write_json(report: ScanReport, output: Path) -> None:
-    output.write_text(
-        json.dumps(report.model_dump(mode="json"), indent=2) + "\n", encoding="utf-8"
-    )
+    output.write_text(json.dumps(report.model_dump(mode="json"), indent=2) + "\n", encoding="utf-8")
