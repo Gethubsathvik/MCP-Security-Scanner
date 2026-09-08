@@ -22,14 +22,20 @@ SEVERITY_STYLE = {
 def render_terminal(report: ScanReport, console: Console | None = None) -> None:
     console = console or Console()
     counts = report.counts
-    summary = "  ".join(f"[{SEVERITY_STYLE[level]}]{level.title()}: {counts[level]}[/]" for level in counts if counts[level])
+    summary = "  ".join(
+        f"[{SEVERITY_STYLE[level]}]{level.title()}: {counts[level]}[/]"
+        for level in counts
+        if counts[level]
+    )
     console.print()
-    console.print(Panel(
-        f"[bold]Target[/] {report.target}\n[bold]Transport[/] {report.transport}    [bold]Risk score[/] {report.score}/100\n"
-        f"[bold]Introspected[/] {report.tools_scanned} tools, {report.resources_scanned} resources, {report.prompts_scanned} prompts\n\n{summary or '[green]No findings[/]' }",
-        title="mcpscan security report",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold]Target[/] {report.target}\n[bold]Transport[/] {report.transport}    [bold]Risk score[/] {report.score}/100\n"
+            f"[bold]Introspected[/] {report.tools_scanned} tools, {report.resources_scanned} resources, {report.prompts_scanned} prompts\n\n{summary or '[green]No findings[/]'}",
+            title="mcpscan security report",
+            border_style="blue",
+        )
+    )
     if not report.findings:
         console.print("[green]PASS[/] No registered checks produced a finding.")
         return
@@ -49,4 +55,6 @@ def render_terminal(report: ScanReport, console: Console | None = None) -> None:
 
 
 def write_json(report: ScanReport, output: Path) -> None:
-    output.write_text(json.dumps(report.model_dump(mode="json"), indent=2) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(report.model_dump(mode="json"), indent=2) + "\n", encoding="utf-8"
+    )
