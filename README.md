@@ -1,5 +1,8 @@
 # 🛡️ mcpscan
 
+**Passive security scanner for Model Context Protocol (MCP) servers.**  
+Detects overprivileged tools, secret exposure, injection-susceptible descriptions, weak input validation, and unscoped remote exposure — all without executing tools or attempting exploitation.
+
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
