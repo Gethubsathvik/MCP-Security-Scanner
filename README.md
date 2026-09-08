@@ -238,8 +238,8 @@ Coordinates the scan flow:
 
 ```bash
 # 📥 Clone the repository
-git clone https://github.com/example/mcpscan.git
-cd mcpscan
+git clone https://github.com/Gethubsathvik/MCP-Security-Scanner.git
+cd MCP-Security-Scanner
 
 # 🐍 Create virtual environment
 python -m venv .venv
