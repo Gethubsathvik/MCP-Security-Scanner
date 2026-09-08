@@ -1,0 +1,100 @@
+# MCP Security Scanner — MVP Spec
+**Working name:** `mcpscan`
+
+## What it is
+A CLI tool that connects to an MCP server, introspects its exposed tools/resources/prompts, and runs a registry of static checks against the manifest to flag concrete, named vulnerability classes — overprivileged tools, prompt-injection-susceptible descriptions, missing input validation, leaked secrets, unscoped remote exposure, and excessive tool surface. Outputs a scored, human-readable report plus JSON.
+
+## Why this, why now
+OWASP's MCP-specific vulnerability list is brand new, the ecosystem has crossed 17,000+ public servers, and almost nothing audits them yet. It's first-mover territory, and it reuses the DISCOVER → VALIDATE → SCORE shape you've already designed for OpenVuln — just pointed at a manifest instead of a network host.
+
+## MVP scope
+
+**In (v1):**
+- CLI only — no API, no dashboard, no DB
+- Local/stdio MCP servers first (simplest to test against — you control the target)
+- HTTP/SSE remote servers as a stretch goal once stdio is solid
+- 6 checks, static/passive only — read the manifest and protocol responses, never actively exploit anything
+- Rich terminal report + JSON export
+- Severity scoring: Critical / High / Medium / Low / Info, rubric-based (full CVSS-style scoring is a v2 concern)
+
+**Out (v2+):**
+- Full OWASP MCP taxonomy — NeighborJack (live port-conflict) detection and cost-amplification testing both need active/dynamic probing, a different engineering problem, deferred
+- Authenticated scanning of arbitrary third-party production servers at scale
+- API, dashboard, multi-user, RBAC
+- CI / continuous-monitoring integration
+- Auto-remediation beyond a one-line suggestion per finding
+
+## Architecture
+
+```
+mcpscan/
+├── cli.py                  # Typer entrypoint
+├── core/
+│   ├── mcp_client.py        # wraps the official MCP SDK — connect, list tools/resources/prompts
+│   ├── scanner.py           # orchestrates: connect → introspect → run checks → aggregate → score
+│   └── report.py            # Rich terminal renderer + JSON exporter
+├── checks/
+│   ├── base.py               # Check protocol
+│   ├── overprivileged_tool.py
+│   ├── injection_susceptible_description.py
+│   ├── weak_input_validation.py
+│   ├── secret_exposure.py
+│   ├── unscoped_remote_exposure.py
+│   └── excessive_surface.py
+└── models.py                 # Finding, ScanReport (Pydantic v2)
+```
+
+**Stack:** Python 3.12+, Typer, Rich, the official `mcp` SDK, Pydantic v2, pytest. Deliberately lighter than OpenVuln's stack — no Celery/Redis/Postgres for an MVP that just needs to scan and report.
+
+## The 6 checks
+
+1. **Overprivileged tool** — flags tools whose description/schema implies broad capability (filesystem write, shell exec, arbitrary network calls) with no parameter scoping it down.
+2. **Injection-susceptible description** — heuristic scan of tool/resource descriptions for imperative language, hidden instructions, or formatting anomalies that could hijack an agent reading them as context.
+3. **Weak input validation** — parameters with no schema constraints (bare `string` type, no pattern/enum/length) where the tool's purpose implies structured input.
+4. **Secret exposure** — regex/entropy scan of descriptions and default config for hardcoded keys, tokens, credentials.
+5. **Unscoped remote exposure** — for HTTP/SSE servers: missing auth headers, permissive CORS, no rate-limit signal.
+6. **Excessive tool surface** — server exposes materially more tools than its stated purpose suggests (heuristic flag for human review, not an auto-fail).
+
+## Data model (sketch)
+
+```python
+class Finding(BaseModel):
+    check_id: str
+    severity: Literal["critical", "high", "medium", "low", "info"]
+    target: str            # tool/resource name implicated
+    description: str
+    evidence: str            # the specific manifest snippet that triggered it
+    remediation: str         # one-line fix suggestion
+
+class ScanReport(BaseModel):
+    target: str
+    transport: Literal["stdio", "http"]
+    findings: list[Finding]
+    scanned_at: datetime
+```
+
+## CLI surface
+
+```
+mcpscan scan <target> --transport stdio
+mcpscan scan <url> --transport http --output report.json
+mcpscan scan <target> --severity-threshold high
+```
+
+## Build phases
+
+1. MCP client wrapper (stdio) + CLI skeleton — connect/introspect working end-to-end
+2. Finding/Report models + checks 1–3 (overprivileged tool, injection-susceptible description, weak validation)
+3. Checks 4–6 (secret exposure, unscoped remote exposure, excessive surface) + scoring rubric + Rich report
+4. JSON export + a deliberately-flawed demo MCP server to test against + test suite + README
+
+## Success criteria
+
+Build one intentionally-vulnerable demo MCP server — an unscoped filesystem-write tool, a description with injected instructions, a hardcoded API key — and scan it. Every planted flaw should surface as a Finding at the right severity, with zero false positives against a clean, well-scoped reference server. That's a real, demoable v1.
+
+## Relationship to OpenVuln
+
+Build it standalone for the MVP — don't couple it to OpenVuln's in-progress architecture and phase timeline. Once it's proven, folding it in as an OpenVuln module (or keeping it separate and cross-linking) is a v2 decision, not a v1 one.
+
+---
+*Next step: say "build phase 1" to start.*

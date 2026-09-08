@@ -1,6 +1,6 @@
-# [Project name]
+# mcpscan
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+`mcpscan` is a standalone Python CLI that passively audits MCP server metadata and emits Rich terminal and JSON security reports.
 
 ## Run & Operate
 
@@ -10,6 +10,8 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
+- `python -m mcpscan.cli scan "python -m mcpscan.demo_server" --transport stdio` — scan the intentionally vulnerable local demo
+- `python -m pytest -q` — run the Python unit suite
 
 ## Stack
 
@@ -19,26 +21,35 @@ _Replace the heading above with the project's name, and this line with one sente
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
+- Scanner: Python 3.12, official `mcp` SDK, Typer, Rich, Pydantic v2, pytest
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `mcpscan/client.py` — official SDK transport wrappers and read-only introspection
+- `mcpscan/checks/` — six passive finding checks
+- `mcpscan/scanner.py` — orchestration, threshold filtering, and scoring
+- `mcpscan/report.py` — Rich terminal renderer and JSON export
+- `mcpscan/demo_server.py` — deliberately vulnerable local MCP server
+- `tests/` — check and serialization coverage
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The scanner never calls MCP tools, resources, or prompts; it only initializes a session and lists metadata.
+- The Python scanner stays standalone from the existing TypeScript API artifact so it can evolve into a CLI package independently.
+- Remote exposure findings are based on explicit CLI-declared signals because auth, CORS, and rate-limit policy are not reliably inferable from a passive MCP manifest.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Users can scan local stdio MCP servers or HTTP endpoints, filter findings by severity, see a scored Rich report, and export the full report as JSON.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+The MVP is intentionally passive and standalone; active exploitation, dashboards, databases, and continuous monitoring are deferred.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Use `python -m mcpscan.cli` or the installed `mcpscan` entry point; the existing TypeScript workflows are unrelated to the CLI.
+- The demo server intentionally contains a fake credential pattern for scanner regression coverage; never use it as a real secret.
 
 ## Pointers
 

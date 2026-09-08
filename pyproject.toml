@@ -1,0 +1,16 @@
+[project]
+name = "mcpscan"
+version = "0.1.0"
+description = "Passive security scanner for Model Context Protocol servers"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx2>=2.12.0",
+    "mcp>=2.2.0",
+    "pydantic>=2.13.5",
+    "pytest>=9.1.1",
+    "rich>=15.0.0",
+    "typer>=0.27.2",
+]
+
+[project.scripts]
+mcpscan = "mcpscan.cli:app"

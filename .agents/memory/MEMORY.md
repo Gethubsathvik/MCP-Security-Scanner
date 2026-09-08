@@ -1,0 +1,1 @@
+- [MCP SDK v2 migration](mcp-sdk-v2.md) — the installed Python SDK is 2.x and uses MCPServer; v1 FastMCP imports are unavailable.
