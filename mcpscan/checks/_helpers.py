@@ -8,7 +8,7 @@ from typing import Any
 def compact(value: Any, limit: int = 300) -> str:
     text = value if isinstance(value, str) else json.dumps(value, sort_keys=True, default=str)
     text = " ".join(text.split())
-    return text if len(text) <= limit else f"{text[:limit - 1]}…"
+    return text if len(text) <= limit else f"{text[: limit - 1]}…"
 
 
 def manifest_items(manifest: Any) -> Iterable[tuple[str, dict[str, Any]]]:
@@ -19,8 +19,7 @@ def manifest_items(manifest: Any) -> Iterable[tuple[str, dict[str, Any]]]:
 
 def item_text(item: dict[str, Any]) -> str:
     return " ".join(
-        str(item.get(key, ""))
-        for key in ("name", "title", "description", "uri", "uriTemplate")
+        str(item.get(key, "")) for key in ("name", "title", "description", "uri", "uriTemplate")
     )
 
 
