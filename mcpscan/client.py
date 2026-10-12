@@ -104,7 +104,7 @@ class MCPClient:
                 return await _introspect(
                     read_stream, write_stream, self.target, self.transport, self.remote_signals
                 )
-            except Exception as streamable_error:
+            except Exception:
                 if self.transport != "http":
                     raise
                 async with sse_client(self.target, headers=self.headers or {}) as streams:
