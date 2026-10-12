@@ -4,7 +4,7 @@ import asyncio
 import os
 import shlex
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -53,33 +53,32 @@ def scan(
         str, typer.Option("--transport", "-t", help="Connection transport: stdio or http.")
     ] = "stdio",
     output: Annotated[
-        Optional[Path], typer.Option("--output", "-o", help="Write the full report as JSON.")
+        Path | None, typer.Option("--output", "-o", help="Write the full report as JSON.")
     ] = None,
     severity_threshold: Annotated[
         Severity,
         typer.Option("--severity-threshold", help="Only show findings at or above this level."),
     ] = "info",
     cwd: Annotated[
-        Optional[Path], typer.Option("--cwd", help="Working directory for a stdio server.")
+        Path | None, typer.Option("--cwd", help="Working directory for a stdio server.")
     ] = None,
     auth_header: Annotated[
-        Optional[str],
+        str | None,
         typer.Option(
             "--auth-header", help="Declared remote auth header name, for exposure checks."
         ),
     ] = None,
     cors: Annotated[
-        Optional[str],
-        typer.Option("--cors", help="Declared CORS policy signal, e.g. restricted or *."),
+        str | None, typer.Option("--cors", help="Declared CORS policy signal, e.g. restricted or *.")
     ] = None,
     rate_limit_signal: Annotated[
-        Optional[str],
+        str | None,
         typer.Option(
             "--rate-limit-signal", help="Documented rate limit signal for an HTTP target."
         ),
     ] = None,
     checks: Annotated[
-        Optional[str], typer.Option("--checks", help="Comma-separated check IDs to run.")
+        str | None, typer.Option("--checks", help="Comma-separated check IDs to run.")
     ] = None,
 ) -> None:
     """Connect, introspect, and run passive checks without calling tools."""
@@ -111,7 +110,7 @@ def scan(
         report = asyncio.run(Scanner(checks=selected_checks).scan(client, severity_threshold))
     except Exception as exc:
         typer.echo(f"[red]Scan failed:[/] {exc}", err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from exc
     render_terminal(report, console)
     if output:
         write_json(report, output)
