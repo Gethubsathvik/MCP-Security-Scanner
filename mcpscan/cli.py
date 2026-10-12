@@ -19,7 +19,9 @@ from mcpscan.report import render_terminal, write_json
 from mcpscan.scanner import Scanner
 
 app = typer.Typer(
-    add_completion=False, no_args_is_help=True, help="Passively audit an MCP server manifest."
+    add_completion=False,
+    no_args_is_help=True,
+    help="Passively audit an MCP server manifest.",
 )
 console = Console()
 
@@ -48,37 +50,43 @@ def list_checks() -> None:
 
 @app.command()
 def scan(
-    target: Annotated[str, typer.Argument(help="stdio command or HTTP/SSE endpoint to inspect.")],
+    target: Annotated[
+        str, typer.Argument(help="stdio command or HTTP/SSE endpoint to inspect.")
+    ],
     transport: Annotated[
-        str, typer.Option("--transport", "-t", help="Connection transport: stdio or http.")
+        str,
+        typer.Option("--transport", "-t", help="Connection transport: stdio or http."),
     ] = "stdio",
     output: Annotated[
-        Path | None, typer.Option("--output", "-o", help="Write the full report as JSON.")
+        Path | None,
+        typer.Option("--output", "-o", help="Write the full report as JSON."),
     ] = None,
     severity_threshold: Annotated[
         Severity,
         typer.Option("--severity-threshold", help="Only show findings at or above this level."),
     ] = "info",
     cwd: Annotated[
-        Path | None, typer.Option("--cwd", help="Working directory for a stdio server.")
+        Path | None,
+        typer.Option("--cwd", help="Working directory for a stdio server."),
     ] = None,
     auth_header: Annotated[
         str | None,
-        typer.Option(
-            "--auth-header", help="Declared remote auth header name, for exposure checks."
-        ),
+        typer.Option("--auth-header", help="Declared remote auth header name, for exposure checks."),
     ] = None,
     cors: Annotated[
-        str | None, typer.Option("--cors", help="Declared CORS policy signal, e.g. restricted or *.")
+        str | None,
+        typer.Option("--cors", help="Declared CORS policy signal, e.g. restricted or *."),
     ] = None,
     rate_limit_signal: Annotated[
         str | None,
         typer.Option(
-            "--rate-limit-signal", help="Documented rate limit signal for an HTTP target."
+            "--rate-limit-signal",
+            help="Documented rate limit signal for an HTTP target.",
         ),
     ] = None,
     checks: Annotated[
-        str | None, typer.Option("--checks", help="Comma-separated check IDs to run.")
+        str | None,
+        typer.Option("--checks", help="Comma-separated check IDs to run."),
     ] = None,
 ) -> None:
     """Connect, introspect, and run passive checks without calling tools."""
