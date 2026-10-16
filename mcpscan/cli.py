@@ -58,24 +58,31 @@ def scan(
         typer.Option("--transport", "-t", help="Connection transport: stdio or http."),
     ] = "stdio",
     output: Annotated[
-        Path | None,
-        typer.Option("--output", "-o", help="Write the full report as JSON."),
+        Path | None, typer.Option("--output", "-o", help="Write the full report as JSON.")
     ] = None,
     severity_threshold: Annotated[
         Severity,
-        typer.Option("--severity-threshold", help="Only show findings at or above this level."),
+        typer.Option(
+            "--severity-threshold",
+            help="Only show findings at or above this level.",
+        ),
     ] = "info",
     cwd: Annotated[
-        Path | None,
-        typer.Option("--cwd", help="Working directory for a stdio server."),
+        Path | None, typer.Option("--cwd", help="Working directory for a stdio server.")
     ] = None,
     auth_header: Annotated[
         str | None,
-        typer.Option("--auth-header", help="Declared remote auth header name, for exposure checks."),
+        typer.Option(
+            "--auth-header",
+            help="Declared remote auth header name, for exposure checks.",
+        ),
     ] = None,
     cors: Annotated[
         str | None,
-        typer.Option("--cors", help="Declared CORS policy signal, e.g. restricted or *."),
+        typer.Option(
+            "--cors",
+            help="Declared CORS policy signal, e.g. restricted or *.",
+        ),
     ] = None,
     rate_limit_signal: Annotated[
         str | None,
@@ -85,8 +92,7 @@ def scan(
         ),
     ] = None,
     checks: Annotated[
-        str | None,
-        typer.Option("--checks", help="Comma-separated check IDs to run."),
+        str | None, typer.Option("--checks", help="Comma-separated check IDs to run.")
     ] = None,
 ) -> None:
     """Connect, introspect, and run passive checks without calling tools."""
@@ -115,7 +121,9 @@ def scan(
         )
     try:
         selected_checks = _load_checks(checks)
-        report = asyncio.run(Scanner(checks=selected_checks).scan(client, severity_threshold))
+        report = asyncio.run(
+            Scanner(checks=selected_checks).scan(client, severity_threshold)
+        )
     except Exception as exc:
         typer.echo(f"[red]Scan failed:[/] {exc}", err=True)
         raise typer.Exit(code=1) from exc
